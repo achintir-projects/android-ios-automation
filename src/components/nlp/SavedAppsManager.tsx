@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Save, Trash2, Eye, Copy, Download } from 'lucide-react';
+import TemplateViewer from './TemplateViewer';
 
 interface SavedApp {
   id: string;
@@ -29,7 +30,7 @@ export default function SavedAppsManager() {
   const [loading, setLoading] = useState(false);
   const [selectedApp, setSelectedApp] = useState<SavedApp | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [templateViewerOpen, setTemplateViewerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('apps');
 
@@ -74,23 +75,49 @@ export default function SavedAppsManager() {
     }
   };
 
-  const handleUseApp = (app: SavedApp) => {
+  const handleUseApp = (app: any) => {
     // This would typically populate the NLP interface with the app data
     // For now, we'll just copy the original input to clipboard
-    navigator.clipboard.writeText(app.originalInput);
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(app.originalInput).catch(() => {
+        // Fallback for clipboard API not being available
+        const textArea = document.createElement('textarea');
+        textArea.value = app.originalInput;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Failed to copy to clipboard:', err);
+        }
+        document.body.removeChild(textArea);
+      });
+    } else {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = app.originalInput;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+      }
+      document.body.removeChild(textArea);
+    }
     alert('App original input copied to clipboard! You can paste it in the NLP interface.');
   };
 
-  const handleExportApp = (app: SavedApp) => {
+  const handleExportApp = (app: any) => {
     const exportData = {
       name: app.name,
       description: app.description,
       originalInput: app.originalInput,
       domain: app.domain,
-      requirements: JSON.parse(app.requirements || '{}'),
-      specifications: JSON.parse(app.specifications || '{}'),
-      metadata: JSON.parse(app.metadata || '{}'),
-      tags: JSON.parse(app.tags || '[]'),
+      requirements: app.requirements,
+      specifications: app.specifications,
+      metadata: app.metadata,
+      tags: app.tags,
       exportedAt: new Date().toISOString()
     };
     
@@ -162,7 +189,7 @@ export default function SavedAppsManager() {
             variant="outline"
             onClick={() => {
               setSelectedApp(app);
-              setViewDialogOpen(true);
+              setTemplateViewerOpen(true);
             }}
           >
             <Eye className="h-4 w-4" />
@@ -266,66 +293,6 @@ export default function SavedAppsManager() {
         </TabsContent>
       </Tabs>
 
-      {/* View App Dialog */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{selectedApp?.name}</DialogTitle>
-            <DialogDescription>
-              {selectedApp?.description}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedApp && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <strong>Domain:</strong> {selectedApp.domain}
-                </div>
-                <div>
-                  <strong>Created:</strong> {new Date(selectedApp.createdAt).toLocaleDateString()}
-                </div>
-                <div>
-                  <strong>Type:</strong> {selectedApp.isTemplate ? 'Template' : 'App'}
-                </div>
-                <div>
-                  <strong>Tags:</strong> {JSON.parse(selectedApp.tags || '[]').join(', ') || 'None'}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold mb-2">Original Input</h4>
-                <div className="bg-muted p-3 rounded text-sm">
-                  {selectedApp.originalInput}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold mb-2">Requirements</h4>
-                <div className="bg-muted p-3 rounded text-sm max-h-40 overflow-y-auto">
-                  <pre>{JSON.stringify(JSON.parse(selectedApp.requirements || '{}'), null, 2)}</pre>
-                </div>
-              </div>
-              
-              {selectedApp.specifications && selectedApp.specifications !== '{}' && (
-                <div>
-                  <h4 className="font-semibold mb-2">Specifications</h4>
-                  <div className="bg-muted p-3 rounded text-sm max-h-40 overflow-y-auto">
-                    <pre>{JSON.stringify(JSON.parse(selectedApp.specifications || '{}'), null, 2)}</pre>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Delete App Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
@@ -349,6 +316,27 @@ export default function SavedAppsManager() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Template Viewer */}
+      {templateViewerOpen && selectedApp && (
+        <TemplateViewer
+          template={{
+            ...selectedApp,
+            requirements: JSON.parse(selectedApp.requirements || '{}'),
+            specifications: JSON.parse(selectedApp.specifications || '{}'),
+            metadata: JSON.parse(selectedApp.metadata || '{}'),
+            tags: JSON.parse(selectedApp.tags || '[]')
+          }}
+          onClose={() => {
+            setTemplateViewerOpen(false);
+            setSelectedApp(null);
+          }}
+          onUseTemplate={(template) => {
+            handleUseApp(template);
+            setTemplateViewerOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
