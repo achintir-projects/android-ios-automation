@@ -1,0 +1,95 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "auth-service"
+    static_configs:
+      - targets: ["auth-service:3001"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "nlp-service"
+    static_configs:
+      - targets: ["nlp-service:3002"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "codegen-service"
+    static_configs:
+      - targets: ["codegen-service:3003"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "build-service"
+    static_configs:
+      - targets: ["build-service:3004"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "deployment-service"
+    static_configs:
+      - targets: ["deployment-service:3005"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "testing-service"
+    static_configs:
+      - targets: ["testing-service:3006"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "monitoring-service"
+    static_configs:
+      - targets: ["monitoring-service:3007"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "feedback-service"
+    static_configs:
+      - targets: ["feedback-service:3008"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "frontend"
+    static_configs:
+      - targets: ["frontend:3000"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "nginx"
+    static_configs:
+      - targets: ["api-gateway:80"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "postgres"
+    static_configs:
+      - targets: ["postgres:5432"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis:6379"]
+    metrics_path: "/metrics"
+    scrape_interval: 30s
+
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+    scrape_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
