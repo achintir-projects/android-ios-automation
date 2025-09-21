@@ -30,3 +30,18 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model SavedApp {
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  originalInput   String
+  domain          String
+  requirements    String   // JSON
+  specifications String   // JSON
+  metadata        String   // JSON
+  isTemplate      Boolean  @default(false)
+  tags            String   // JSON array
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
