@@ -15,7 +15,8 @@ import {
   Zap,
   Users,
   TrendingUp,
-  Star
+  Star,
+  Mic
 } from 'lucide-react';
 
 interface DashboardNavigationProps {
