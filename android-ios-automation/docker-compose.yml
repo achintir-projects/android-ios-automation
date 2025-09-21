@@ -100,14 +100,26 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - GOOGLE_PLAY_CREDENTIALS=${GOOGLE_PLAY_CREDENTIALS}
+      - APP_STORE_ISSUER_ID=${APP_STORE_ISSUER_ID}
+      - APP_STORE_KEY_ID=${APP_STORE_KEY_ID}
+      - APP_STORE_PRIVATE_KEY=${APP_STORE_PRIVATE_KEY}
+      - FIREBASE_SERVICE_ACCOUNT=${FIREBASE_SERVICE_ACCOUNT}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
       - FASTLANE_USER=${FASTLANE_USER}
       - FASTLANE_PASSWORD=${FASTLANE_PASSWORD}
       - MATCH_PASSWORD=${MATCH_PASSWORD}
       - APPLE_DEVELOPER_TEAM_ID=${APPLE_DEVELOPER_TEAM_ID}
     depends_on:
       - postgres
+      - redis
     volumes:
       - ./services/deployment:/app
+      - ./services/deployment/uploads:/app/uploads
     networks:
       - app-network
 

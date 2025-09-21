@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, Code, Database, GitBranch, Monitor, Smartphone, Upload, Zap } from "lucide-react";
+import { Activity, Code, Database, GitBranch, Monitor, Smartphone, Upload, Zap, Rocket } from "lucide-react";
+import { useRouter } from "next/router";
 
 interface SystemStatus {
   auth: boolean;
@@ -13,6 +14,7 @@ interface SystemStatus {
 }
 
 export function DashboardPage() {
+  const router = useRouter();
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     auth: false,
     nlp: false,
@@ -31,8 +33,8 @@ export function DashboardPage() {
           auth: true,
           nlp: true,
           codegen: true,
-          build: false,
-          deployment: false,
+          build: true,
+          deployment: true,
           monitoring: true,
         });
       }, 1000);
@@ -193,7 +195,7 @@ export function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Button className="h-20 flex-col space-y-2" disabled>
                 <Upload className="h-6 w-6" />
                 <span>New Project</span>
@@ -201,6 +203,10 @@ export function DashboardPage() {
               <Button className="h-20 flex-col space-y-2" variant="outline" disabled>
                 <Smartphone className="h-6 w-6" />
                 <span>View Projects</span>
+              </Button>
+              <Button className="h-20 flex-col space-y-2" variant="outline" onClick={() => router.push('/deployment')}>
+                <Rocket className="h-6 w-6" />
+                <span>Deploy App</span>
               </Button>
               <Button className="h-20 flex-col space-y-2" variant="outline" disabled>
                 <Monitor className="h-6 w-6" />
