@@ -783,16 +783,36 @@ Remember: Return ONLY valid JSON without any formatting or explanation.`;
         // Clean the content - remove markdown formatting and extract JSON
         let cleanContent = content.trim();
         
-        // Remove markdown headers and formatting
+        // Remove markdown code blocks
         cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+        cleanContent = cleanContent.replace(/```javascript\n?/g, '').replace(/```\n?/g, '');
+        
+        // Remove markdown headers and formatting
         cleanContent = cleanContent.replace(/#{1,6}\s.*$/gm, ''); // Remove markdown headers
         cleanContent = cleanContent.replace(/^\s*[-*+]\s.*$/gm, ''); // Remove markdown lists
+        cleanContent = cleanContent.replace(/^\s*\d+\.\s.*$/gm, ''); // Remove numbered lists
+        cleanContent = cleanContent.replace(/\*\*([^*]+)\*\*/g, '$1'); // Remove bold formatting
+        cleanContent = cleanContent.replace(/\*([^*]+)\*/g, '$1'); // Remove italic formatting
+        
+        // Remove explanatory text before and after JSON
+        cleanContent = cleanContent.replace(/^[^{]*/, ''); // Remove everything before first {
+        cleanContent = cleanContent.replace(/[^}]*$/, ''); // Remove everything after last }
         
         // Try to find JSON object in the content
         const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           cleanContent = jsonMatch[0];
         }
+        
+        // Validate that the content looks like JSON
+        if (!cleanContent.trim().startsWith('{') || !cleanContent.trim().endsWith('}')) {
+          throw new Error('Content does not appear to be valid JSON');
+        }
+        
+        // Fix common JSON issues
+        cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1'); // Remove trailing commas
+        cleanContent = cleanContent.replace(/(\w+)\s*:/g, '"$1":'); // Quote unquoted property names
+        cleanContent = cleanContent.replace(/:\s*'([^']*)'/g, ': "$1"'); // Convert single quotes to double quotes
         
         const analysis = JSON.parse(cleanContent);
         return {
@@ -1041,7 +1061,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Analyze requirements API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', message: 'Failed to analyze requirements' },
+      { 
+        error: 'Internal server error', 
+        message: 'Failed to analyze requirements',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
