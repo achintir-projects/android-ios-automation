@@ -45,3 +45,95 @@ model SavedApp {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+model Feedback {
+  id          String           @id @default(cuid())
+  appId       String
+  userId      String           @default("anonymous")
+  type        String           // 'bug', 'feature', 'improvement', 'complaint', 'compliment'
+  category    String           @default("general")
+  rating      Int?             // 1-5 scale
+  title       String
+  description String
+  sentiment   String?          // 'positive', 'neutral', 'negative'
+  keywords    String?          // JSON array
+  metadata    String           @default("{}") // JSON object
+  status      String           @default("pending") // 'pending', 'processed', 'failed'
+  error       String?
+  processedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  analytics    FeedbackAnalytics[]
+  
+  @@index([appId])
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([sentiment])
+  @@index([createdAt])
+}
+
+model FeedbackAnalytics {
+  id         String   @id @default(cuid())
+  feedbackId String
+  appId      String
+  type       String
+  category   String
+  rating     Int?
+  sentiment  String
+  keywords   String   // JSON array
+  createdAt  DateTime @default(now())
+  
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  
+  @@index([appId])
+  @@index([type])
+  @@index([sentiment])
+  @@index([createdAt])
+}
+
+model Alert {
+  id        String           @id @default(cuid())
+  type      String           // 'system', 'security', 'performance', 'business', 'operational'
+  severity  String           // 'critical', 'high', 'medium', 'low'
+  title     String
+  message   String
+  source    String           @default("system")
+  metadata  String           @default("{}") // JSON object
+  channels  String           @default("[\"email\"]") // JSON array
+  status    String           @default("active") // 'active', 'sent', 'failed', 'acknowledged', 'resolved'
+  error     String?
+  sentAt    DateTime?
+  acknowledgedAt DateTime?
+  resolvedAt DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  notifications Notification[]
+  
+  @@index([type])
+  @@index([severity])
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  alertId   String
+  channel   String   // 'email', 'sms', 'slack', 'pagerduty', 'webhook'
+  status    String   @default("pending") // 'pending', 'sent', 'failed', 'delivered'
+  error     String?
+  sentAt    DateTime?
+  deliveredAt DateTime?
+  metadata  String   @default("{}") // JSON object
+  createdAt DateTime @default(now())
+  
+  alert     Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  
+  @@index([alertId])
+  @@index([channel])
+  @@index([status])
+  @@index([createdAt])
+}
