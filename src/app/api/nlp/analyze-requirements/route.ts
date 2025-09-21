@@ -762,7 +762,12 @@ ${detectedDomain === 'kyc' ? `- Regulatory compliance and security requirements
 
 Remember: Return ONLY valid JSON without any formatting or explanation.`;
 
-    const response = await zai.chat.completions.create({
+    // Add timeout to AI service call
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('AI service timeout')), 30000); // 30 second timeout
+    });
+
+    const aiCallPromise = zai.chat.completions.create({
       messages: [
         {
           role: 'system',
@@ -773,9 +778,17 @@ Remember: Return ONLY valid JSON without any formatting or explanation.`;
           content: `Project Description: ${description}\n\nProject Type: ${projectType}\n\nAnalyze this project and provide comprehensive requirements analysis with domain-specific features.`
         }
       ],
-      max_tokens: 2000,
+      max_tokens: 1500, // Reduced from 2000 to make it faster
       temperature: 0.3
     });
+
+    let response;
+    try {
+      response = await Promise.race([aiCallPromise, timeoutPromise]) as any;
+    } catch (timeoutError) {
+      console.warn('AI service call timed out:', timeoutError);
+      return await analyzeRequirementsRuleBased(description, projectType, detectedDomain);
+    }
 
     const content = response.choices[0]?.message?.content;
     if (content) {
@@ -1033,10 +1046,16 @@ function analyzeRequirementsRuleBased(description: string, projectType: string, 
 
 export async function POST(request: NextRequest) {
   try {
+    // Add overall timeout for the entire request
+    const overallTimeout = setTimeout(() => {
+      throw new Error('Request timeout');
+    }, 45000); // 45 second overall timeout
+
     const body = await request.json();
     const { description, projectType = 'mobile-app' } = body;
 
     if (!description || typeof description !== 'string') {
+      clearTimeout(overallTimeout);
       return NextResponse.json(
         { error: 'Invalid input', message: 'Description is required and must be a string' },
         { status: 400 }
@@ -1050,6 +1069,8 @@ export async function POST(request: NextRequest) {
     // Try AI-powered analysis first
     const aiResult = await analyzeRequirementsWithAI(description, projectType, detectedDomain);
     
+    clearTimeout(overallTimeout);
+    
     if (aiResult.success) {
       return NextResponse.json(aiResult);
     }
@@ -1060,6 +1081,10 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Analyze requirements API error:', error);
+    // Clear timeout if it exists
+    if (typeof overallTimeout !== 'undefined') {
+      clearTimeout(overallTimeout);
+    }
     return NextResponse.json(
       { 
         error: 'Internal server error', 
