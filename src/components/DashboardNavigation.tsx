@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Brain, 
+  Lightbulb, 
   MessageSquare, 
   BarChart3, 
   Settings, 
@@ -28,11 +28,11 @@ export default function DashboardNavigation({ activeTab, onTabChange }: Dashboar
   const features = [
     {
       id: 'nlp',
-      title: 'NLP Processing',
-      description: 'Convert natural language to app specifications',
-      icon: Brain,
-      status: 'active',
-      color: 'bg-blue-100 text-blue-800'
+      title: 'App Idea Translator',
+      description: 'Describe your idea in plain English, get a complete app!',
+      icon: Lightbulb,
+      status: 'new',
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
     },
     {
       id: 'voice',
@@ -122,7 +122,7 @@ export default function DashboardNavigation({ activeTab, onTabChange }: Dashboar
           Mobile App Automation Platform
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Transform your ideas into fully functional mobile applications with AI-powered automation
+          Transform your ideas into fully functional mobile applications with our friendly AI-powered app creator
         </p>
       </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import DashboardNavigation from '@/components/DashboardNavigation';
-import NLPInterface from '@/components/nlp/NLPInterface';
+import AppIdeaTranslator from '@/components/AppIdeaTranslator';
 import VoiceNLPInterface from '@/components/voice/VoiceNLPInterface';
 import FeedbackDashboard from '@/components/feedback/FeedbackDashboard';
 import FeedbackForm from '@/components/feedback/FeedbackForm';
@@ -23,7 +23,8 @@ import {
   Users,
   TrendingUp,
   Star,
-  Mic
+  Mic,
+  Lightbulb
 } from 'lucide-react';
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'nlp':
-        return <NLPInterface />;
+        return <AppIdeaTranslator />;
       case 'voice':
         return <VoiceNLPInterface />;
       case 'feedback':
@@ -151,7 +152,7 @@ export default function Home() {
                   <CardContent>
                     <div className="space-y-3">
                       {[
-                        { name: 'NLP Service', status: 'Healthy', uptime: '99.9%' },
+                        { name: 'App Idea Translator', status: 'Healthy', uptime: '99.9%' },
                         { name: 'Code Generation', status: 'Healthy', uptime: '99.8%' },
                         { name: 'Deployment Service', status: 'Healthy', uptime: '99.7%' },
                         { name: 'Monitoring Service', status: 'Healthy', uptime: '100%' }
@@ -179,7 +180,7 @@ export default function Home() {
       case 'alerts':
         return <AlertsDashboard />;
       default:
-        return <NLPInterface />;
+        return <AppIdeaTranslator />;
     }
   };
 
