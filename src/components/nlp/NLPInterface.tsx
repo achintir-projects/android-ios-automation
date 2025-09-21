@@ -272,19 +272,21 @@ export default function NLPInterface() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">NLP Processing Interface</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-purple-600 to-slate-800 bg-clip-text text-transparent">
+          NLP Processing Interface
+        </h1>
+        <p className="text-muted-foreground text-slate-600">
           Convert natural language descriptions into structured app specifications
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
+            <Brain className="h-5 w-5 text-purple-600" />
             Input Processing
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-slate-600">
             Enter your app description or requirements in natural language
           </CardDescription>
         </CardHeader>
@@ -293,14 +295,14 @@ export default function NLPInterface() {
             placeholder="Describe your mobile app idea... For example: 'I want to create a fitness tracking app that allows users to log workouts, track progress, and share achievements on social media.'"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="min-h-[120px]"
+            className="min-h-[120px] bg-white border-slate-200 focus:border-purple-400 focus:ring-purple-400/20"
           />
           
           <div className="flex gap-2">
             <Button 
               onClick={processText} 
               disabled={loading || !inputText.trim()}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-md hover:shadow-lg transition-all"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -314,6 +316,7 @@ export default function NLPInterface() {
               onClick={runCompletePipeline} 
               disabled={loading || !inputText.trim()}
               variant="outline"
+              className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400"
             >
               <Target className="h-4 w-4 mr-2" />
               Complete Pipeline
@@ -321,8 +324,8 @@ export default function NLPInterface() {
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="border-red-200 bg-red-50">
+              <AlertDescription className="text-red-800">{error}</AlertDescription>
             </Alert>
           )}
         </CardContent>
@@ -330,50 +333,50 @@ export default function NLPInterface() {
 
       {Object.keys(results).length > 0 && (
         <Tabs defaultValue="processing" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="processing" className="flex items-center gap-1">
+          <TabsList className="grid w-full grid-cols-5 bg-slate-100 p-1 rounded-lg">
+            <TabsTrigger value="processing" className="flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all">
               <FileText className="h-4 w-4" />
               Processing
             </TabsTrigger>
-            <TabsTrigger value="intent" className="flex items-center gap-1">
+            <TabsTrigger value="intent" className="flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all">
               <Target className="h-4 w-4" />
               Intent
             </TabsTrigger>
-            <TabsTrigger value="entities" className="flex items-center gap-1">
+            <TabsTrigger value="entities" className="flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all">
               <Database className="h-4 w-4" />
               Entities
             </TabsTrigger>
-            <TabsTrigger value="requirements" className="flex items-center gap-1">
+            <TabsTrigger value="requirements" className="flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all">
               <FileText className="h-4 w-4" />
               Requirements
             </TabsTrigger>
-            <TabsTrigger value="specs" className="flex items-center gap-1">
+            <TabsTrigger value="specs" className="flex items-center gap-1 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all">
               <Code className="h-4 w-4" />
               Specs
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="processing">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle>Text Processing Results</CardTitle>
+                <CardTitle className="text-slate-800">Text Processing Results</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {results.processing && (
                   <>
                     <div>
-                      <h4 className="font-semibold mb-2">Original Text</h4>
-                      <p className="text-sm bg-muted p-3 rounded">{results.processing.originalText}</p>
+                      <h4 className="font-semibold mb-2 text-slate-700">Original Text</h4>
+                      <p className="text-sm bg-slate-50 p-3 rounded border border-slate-200">{results.processing.originalText}</p>
                     </div>
 
                     {results.processing.language && (
                       <div>
-                        <h4 className="font-semibold mb-2">Language Detection</h4>
+                        <h4 className="font-semibold mb-2 text-slate-700">Language Detection</h4>
                         <div className="flex items-center gap-2">
                           <Badge className={getConfidenceColor(results.processing.language.confidence)}>
                             {results.processing.language.language}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-slate-600">
                             Confidence: {(results.processing.language.confidence * 100).toFixed(1)}%
                           </span>
                         </div>
@@ -382,12 +385,12 @@ export default function NLPInterface() {
 
                     {results.processing.sentiment && (
                       <div>
-                        <h4 className="font-semibold mb-2">Sentiment Analysis</h4>
+                        <h4 className="font-semibold mb-2 text-slate-700">Sentiment Analysis</h4>
                         <div className="flex items-center gap-2">
                           <Badge className={getConfidenceColor(results.processing.sentiment.confidence)}>
                             {results.processing.sentiment.sentiment}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-slate-600">
                             Confidence: {(results.processing.sentiment.confidence * 100).toFixed(1)}%
                           </span>
                         </div>
@@ -396,10 +399,10 @@ export default function NLPInterface() {
 
                     {results.processing.keywords && results.processing.keywords.length > 0 && (
                       <div>
-                        <h4 className="font-semibold mb-2">Keywords</h4>
+                        <h4 className="font-semibold mb-2 text-slate-700">Keywords</h4>
                         <div className="flex flex-wrap gap-2">
                           {results.processing.keywords.map((keyword, index) => (
-                            <Badge key={index} variant="outline">
+                            <Badge key={index} variant="outline" className="border-purple-200 text-purple-700">
                               {keyword}
                             </Badge>
                           ))}
@@ -409,8 +412,8 @@ export default function NLPInterface() {
 
                     {results.processing.summary && (
                       <div>
-                        <h4 className="font-semibold mb-2">Summary</h4>
-                        <p className="text-sm bg-muted p-3 rounded">{results.processing.summary}</p>
+                        <h4 className="font-semibold mb-2 text-slate-700">Summary</h4>
+                        <p className="text-sm bg-slate-50 p-3 rounded border border-slate-200">{results.processing.summary}</p>
                       </div>
                     )}
                   </>

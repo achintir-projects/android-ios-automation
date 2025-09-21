@@ -34,6 +34,14 @@ export default function DashboardNavigation({ activeTab, onTabChange }: Dashboar
       color: 'bg-blue-100 text-blue-800'
     },
     {
+      id: 'voice',
+      title: 'Voice Interface',
+      description: 'Speak your ideas and generate apps instantly',
+      icon: Mic,
+      status: 'new',
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+    },
+    {
       id: 'feedback',
       title: 'Feedback System',
       description: 'Collect and analyze user feedback',
@@ -109,7 +117,9 @@ export default function DashboardNavigation({ activeTab, onTabChange }: Dashboar
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">Mobile App Automation Platform</h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 via-purple-600 to-slate-800 bg-clip-text text-transparent">
+          Mobile App Automation Platform
+        </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Transform your ideas into fully functional mobile applications with AI-powered automation
         </p>
@@ -117,61 +127,80 @@ export default function DashboardNavigation({ activeTab, onTabChange }: Dashboar
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index}>
+          <Card key={index} className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-600">{stat.label}</CardTitle>
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                {stat.value}
+              </div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{stat.change}</span> from last month
+                <span className="text-emerald-600 font-semibold">{stat.change}</span> from last month
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
+      <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5" />
+            <Star className="h-5 w-5 text-amber-500" />
             Platform Features
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-slate-600">
             Explore our comprehensive suite of mobile app automation tools
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 bg-slate-100 p-1 rounded-lg">
               {features.map((feature) => (
-                <TabsTrigger key={feature.id} value={feature.id} className="flex flex-col gap-1 p-3">
+                <TabsTrigger 
+                  key={feature.id} 
+                  value={feature.id} 
+                  className="flex flex-col gap-1 p-3 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md transition-all"
+                >
                   <feature.icon className="h-5 w-5" />
                   <span className="text-xs">{feature.title}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {features.map((feature) => (
                 <Card 
                   key={feature.id} 
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    activeTab === feature.id ? 'ring-2 ring-primary' : ''
+                  className={`cursor-pointer transition-all hover:shadow-lg bg-white border-slate-200 ${
+                    activeTab === feature.id 
+                      ? 'ring-2 ring-purple-500/20 shadow-lg bg-gradient-to-br from-white to-purple-50/30' 
+                      : 'hover:border-purple-300'
                   }`}
                   onClick={() => onTabChange(feature.id)}
                 >
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <feature.icon className="h-6 w-6 text-primary" />
-                      <Badge className={feature.color}>
+                      <feature.icon className={`h-6 w-6 ${
+                        activeTab === feature.id ? 'text-purple-600' : 'text-slate-600'
+                      }`} />
+                      <Badge className={`${feature.color} border-0 shadow-sm ${
+                        feature.status === 'new' ? 'animate-pulse' : ''
+                      }`}>
                         {feature.status === 'active' ? 'Active' : 
-                         feature.status === 'beta' ? 'Beta' : 'Coming Soon'}
+                         feature.status === 'beta' ? 'Beta' : 
+                         feature.status === 'new' ? 'NEW' : 'Coming Soon'}
                       </Badge>
                     </div>
-                    <CardTitle className="text-lg">{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
+                    <CardTitle className={`text-lg ${
+                      activeTab === feature.id ? 'text-slate-800' : 'text-slate-700'
+                    }`}>
+                      {feature.title}
+                    </CardTitle>
+                    <CardDescription className="text-slate-500">
+                      {feature.description}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               ))}

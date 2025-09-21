@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import NLPInterface from '@/components/nlp/NLPInterface';
+import VoiceNLPInterface from '@/components/voice/VoiceNLPInterface';
 import FeedbackDashboard from '@/components/feedback/FeedbackDashboard';
 import FeedbackForm from '@/components/feedback/FeedbackForm';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 import AlertsDashboard from '@/components/alerts/AlertsDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Brain, 
@@ -20,7 +22,8 @@ import {
   Zap,
   Users,
   TrendingUp,
-  Star
+  Star,
+  Mic
 } from 'lucide-react';
 
 export default function Home() {
@@ -30,6 +33,8 @@ export default function Home() {
     switch (activeTab) {
       case 'nlp':
         return <NLPInterface />;
+      case 'voice':
+        return <VoiceNLPInterface />;
       case 'feedback':
         return (
           <div className="space-y-6">
@@ -47,13 +52,13 @@ export default function Home() {
         return <AnalyticsDashboard />;
       case 'deployment':
         return (
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Rocket className="h-5 w-5" />
                 Deployment System
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-slate-600">
                 Multi-channel app deployment automation
               </CardDescription>
             </CardHeader>
@@ -67,7 +72,7 @@ export default function Home() {
                   { name: 'AWS S3', status: 'Active', icon: '📦' },
                   { name: 'GitHub Releases', status: 'Active', icon: '🐙' }
                 ].map((channel, index) => (
-                  <Card key={index}>
+                  <Card key={index} className="bg-white border-slate-200">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <span className="text-2xl">{channel.icon}</span>
@@ -90,19 +95,19 @@ export default function Home() {
         );
       case 'monitoring':
         return (
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Application Monitoring
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-slate-600">
                 Real-time performance and health monitoring
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-white border-slate-200">
                   <CardHeader>
                     <CardTitle className="text-lg">System Health</CardTitle>
                   </CardHeader>
@@ -139,7 +144,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
                 
-                <Card>
+                <Card className="bg-white border-slate-200">
                   <CardHeader>
                     <CardTitle className="text-lg">Active Services</CardTitle>
                   </CardHeader>
@@ -179,7 +184,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <DashboardNavigation activeTab={activeTab} onTabChange={setActiveTab} />
         {renderTabContent()}
